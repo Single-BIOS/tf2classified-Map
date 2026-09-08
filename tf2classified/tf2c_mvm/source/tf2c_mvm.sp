@@ -7,6 +7,7 @@
 // 6. Round restart bugs after the wave is failed ✔️
 // 6. Forced round restart after all the players press f4 with further upgrades & buildings reset
 // 7. The buildings for an engineer cost $0 and upgraded instantly up to lvl3 after the wave begins. 
+// 8. Mission start has 0 starting cash ✔ (auto JumpToWave(1) to trigger engine RestorePlayerCurrency) 
 #pragma newdecls required
 
 #include <sourcemod>
@@ -30,6 +31,8 @@ float g_PlayerAngles[MAXPLAYERS+1][3];
 
 bool flagsSet = false;
 int oldFlags = -1;
+
+bool g_bStartingCashGranted = false;
 
 
 public Plugin myinfo =
@@ -69,6 +72,7 @@ public void OnMapStart()
 	if (!IsMvMActive()) {
 		SetFailState("Not a MvM map. Disabling...");
 	} else {
+		g_bStartingCashGranted = false;
 		CreateEntityByName("info_populator");
 		DispatchSpawn(CreateEntityByName("func_upgradestation"));
 	}
@@ -218,6 +222,28 @@ public Action OnRoundStart(Event event, const char[] name, bool dontBroadcast)
 		SetVariantInt(StringToInt("1"));
 		AcceptEntityInput(entityTimer, "SetTime");
 	}
+
+	if (!g_bStartingCashGranted && IsMvMActive())
+	{
+		int objRes = FindEntityByClassname(-1, "tf_objective_resource");
+		int wave = objRes > -1 ? GetEntProp(objRes, Prop_Send, "m_nMannVsMachineWaveCount") : 1;
+		if (wave <= 1)
+		{
+			g_bStartingCashGranted = true;
+			CreateTimer(0.3, Timer_GrantStartingCash, _, TIMER_FLAG_NO_MAPCHANGE);
+		}
+	}
+
+	return Plugin_Continue;
+}
+
+public Action Timer_GrantStartingCash(Handle timer)
+{
+	if (IsMvMActive())
+	{
+		JumpToWave(1);
+	}
+	return Plugin_Continue;
 }
 
 public Action OnPlayerDeath(Handle event, const char[] name, bool dontBroadcast)
