@@ -78,6 +78,25 @@ Team Fortress 2 Classified\tf2classified\custom\
 .\build.ps1 -Spcomp "D:\tf2c\addons\sourcemod\scripting\spcomp64.exe"
 ```
 
+## Dodgeball 地圖（FastDL）
+
+同一個 `tf2classified/` 目錄也兼作 TF2C Dodgeball 伺服器（Docker / Linux）的 FastDL。
+`sv_downloadurl` 設為：
+
+```
+https://raw.githubusercontent.com/Single-BIOS/tf2classified-Map/main/tf2classified/
+```
+
+目前提供：
+
+| 地圖 | 檔案 |
+| --- | --- |
+| TFDB Orangebox | `tfdb_orangebox_b2.bsp` / `.bsp.bz2` |
+| TFDB Teambox | `tfdb_teambox_final.bsp` / `.bsp.bz2` |
+
+Dodgeball 插件只認得檔名以 `tfdb_`、`db_`、`dbs_` 開頭的地圖。
+新增地圖時 `.bsp` 與 `.bsp.bz2` 都要放，且檔名要和伺服器 `maps/` 內完全一致。
+
 ## 鳴謝
 
 - `tf2c_mvm.smx` 原作者：Glaster
